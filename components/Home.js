@@ -1,7 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput,Image,ScrollView, TouchableOpacity } from 'react-native';
+import axios from 'axios';
 export const Home = ()=>{
-    const[temDiagnostico,setTemDiagnostico] = useState(true)
+    const[temDiagnostico,setTemDiagnostico] = useState(false)
+    const [historico,setHistorico] = useState('')
+    const getDiagnostico = async ()=>{
+        try {
+            const url = 'https://localhealth-gs-default-rtdb.firebaseio.com/diagnosticos.json';
+            const resp = await axios.get(url)
+            setHistorico(resp.data);
+        } catch (error) {
+            console.error('Erro carregar diagnostico:', error);
+        }
+      };
+      useEffect(
+        ()=>{
+            getDiagnostico()
+            if (historico != ''){
+                setTemDiagnostico(true)
+            }
+            const intervalId = setInterval(getDiagnostico, 5000);
+            return () => clearInterval(intervalId);
+        }, 
+      [])
     return(
         <View style={{flex:1}}>
             <View style={{marginTop:'9%',marginLeft:'4%', flexDirection:'row', gap:15,alignItems:'center', position:'absolute'}}>
@@ -12,7 +33,7 @@ export const Home = ()=>{
                 <Text style={{fontSize:25, textAlign:'center'}}>Bem vindo <Text style={{color:'#25960c'}}>Erik!</Text></Text>
             </View>
         {
-            temDiagnostico?
+            !temDiagnostico?
                 <View style={{flex:1,marginTop:50, alignItems:'center', justifyContent:'center', gap:15}}>
                     <Image
                         source={require('../assets/nohistory.png')}

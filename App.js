@@ -1,3 +1,8 @@
+// Integrantes
+// RM95854 - Eduarda Nicoli Cavalheiro
+// RM93535 - Erik Siarkowski Salafia
+// RM95396 - Ingrid Vieira de Oliveira
+
 import { StyleSheet, Text, View,SafeAreaView, TextInput, TouchableOpacity, Button, FlatList } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'; 
@@ -15,6 +20,18 @@ const {Screen, Navigator} = createBottomTabNavigator();
 
 export default function App() {
   const[logado,setLogado] = useState(true)
+  
+
+  
+  const getDiagnostico = async () => {
+    try {
+      const response = await axios.get('https://sprint4-fiap-default-rtdb.firebaseio.com/mensagens.json');
+      setMsg(response.data); // Armazena os dados no estado
+    } catch (error) {
+      console.error('Erro ao fazer a requisição:', error);
+    } 
+  };
+
   return (
     
     <SafeAreaView style={{flex:1}}>
