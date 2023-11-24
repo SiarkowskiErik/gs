@@ -1,9 +1,43 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput,Image,ScrollView, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import { PieChart } from 'react-native-chart-kit';
+
 export const Home = ()=>{
-    const[temDiagnostico,setTemDiagnostico] = useState(false)
+    const[temDiagnostico,setTemDiagnostico] = useState()
     const [historico,setHistorico] = useState('')
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+    if (historico!=''){
+        const countNomedoenca = {};
+
+        // Percorra os elementos do JSON e conte as ocorrências de nomedoença
+        Object.keys(historico).forEach((key) => {
+        const itemData = historico[key];
+        const nomedoenca = itemData.nomedoença;
+
+        // Se já existe uma contagem para esse nomedoença, incremente
+        if (countNomedoenca[nomedoenca]) {
+            countNomedoenca[nomedoenca]++;
+        } else {
+            // Se não existe, inicialize a contagem como 1
+            countNomedoenca[nomedoenca] = 1;
+        }
+        });
+        var data = Object.keys(countNomedoenca).map((nomedoenca) => ({
+            name: nomedoenca,
+            population: countNomedoenca[nomedoenca],
+            color: getRandomColor(),
+            legendFontColor: 'black',
+            legendFontSize: 15,
+          }));
+    }
     const getDiagnostico = async ()=>{
         try {
             const url = 'https://localhealth-gs-default-rtdb.firebaseio.com/diagnosticos.json';
@@ -13,16 +47,14 @@ export const Home = ()=>{
             console.error('Erro carregar diagnostico:', error);
         }
       };
-      useEffect(
-        ()=>{
-            getDiagnostico()
-            if (historico != ''){
-                setTemDiagnostico(true)
-            }
-            const intervalId = setInterval(getDiagnostico, 5000);
-            return () => clearInterval(intervalId);
-        }, 
-      [])
+      useEffect(() => {
+        // Executa a função fetchData imediatamente
+        getDiagnostico();
+    
+        const intervalId = setInterval(getDiagnostico, 5000);
+        return () => clearInterval(intervalId);
+      }, []);
+      
     return(
         <View style={{flex:1}}>
             <View style={{marginTop:'9%',marginLeft:'4%', flexDirection:'row', gap:15,alignItems:'center', position:'absolute'}}>
@@ -33,7 +65,7 @@ export const Home = ()=>{
                 <Text style={{fontSize:25, textAlign:'center'}}>Bem vindo <Text style={{color:'#25960c'}}>Erik!</Text></Text>
             </View>
         {
-            !temDiagnostico?
+            historico == ''?
                 <View style={{flex:1,marginTop:50, alignItems:'center', justifyContent:'center', gap:15}}>
                     <Image
                         source={require('../assets/nohistory.png')}
@@ -44,7 +76,21 @@ export const Home = ()=>{
                 </View>
             :
             <View style={{flex:1,justifyContent:'center', alignItems:'center'}}>
-                <Text style={styles.warning}>Tem diagnostico...</Text>
+                <PieChart
+        data={data}
+        width={400}
+        height={260}
+        chartConfig={{
+          backgroundColor: '#e1e1e1',
+          decimalPlaces: 2,
+          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+        }}
+        accessor="population"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        absolute
+      />
+                
             </View>
         }
         </View>

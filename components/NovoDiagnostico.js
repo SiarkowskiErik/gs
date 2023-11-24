@@ -30,7 +30,7 @@ export const NovoDiagnostico = ()=>{
       };
     return(
         <View style={styles.container}>
-            <Text style={styles.title}>Cadastro de diagnostico</Text>
+            <Text style={styles.title}>CADASTRO DE DIAGNOSTICO</Text>
             <TextInput value={cid} onChangeText={setCid} autoCapitalize="none" autoCorrect={false} placeholderTextColor="white" style={styles.input} placeholder='CID'/>
             <TextInput value={doenca} onChangeText={setDoenca} autoCapitalize="none" autoCorrect={false} placeholderTextColor="white" style={styles.input} placeholder='Doença'/>
             <TextInput value={sintomas} onChangeText={setSintomas} autoCapitalize="none" autoCorrect={false} placeholderTextColor="white" style={styles.input} placeholder='Sintomas'/>
@@ -58,7 +58,9 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize: 40,
-        marginBottom:20
+        marginBottom:20,
+        color:'#25960c',
+        fontWeight:'400'
     },
     button:{
         width:'70%',
